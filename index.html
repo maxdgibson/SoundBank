@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Landing Page</title>
+    <link rel="stylesheet" href="static/styles.css">
+<!--    <script src="static/queue.js"></script>-->
+    <script src="static/playlist.js"></script>
+    <script src="static/download.js"></script>
+</head>
+<body>
+    <header>
+        <a href="/queuepage" class="upload-btn">Queue Music</a>
+    </header>
+    <div class="playlist-container">
+        <label for="playlist-select">Select Playlist:</label>
+        <select id="playlist-select" class="playlist-select">
+            <!-- JavaScript will populate this with user-created playlists -->
+        </select>
+        <button id="new-playlist-btn">New Playlist</button>
+    </div>
+    <div class="search-container">
+        <input type="text" id="search-input" class="search-bar" placeholder="Search..." list="music-suggestions">
+        <datalist id="music-suggestions"></datalist>
+        <button class="download-btn" id="download-btn">Download to Soundbank</button>
+    </div>
+
+    <script>
+        function populatePlaylists() {
+            fetch('/playlists')
+                .then(response => response.json())
+                .then(data => {
+                    const playlistSelect = document.getElementById('playlist-select');
+                    playlistSelect.innerHTML = '';  // Clear existing options
+                    const existingPlaylists = new Set();
+
+                    data.forEach(playlist => {
+                        if (!existingPlaylists.has(playlist)) {
+                            const option = document.createElement('option');
+                            option.value = playlist;
+                            option.textContent = playlist;
+                            playlistSelect.appendChild(option);
+                            existingPlaylists.add(playlist);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching playlists:', error);
+                });
+        }
+
+        document.getElementById('new-playlist-btn').addEventListener('click', () => {
+            const newPlaylistName = prompt("Enter new playlist name:");
+            if (newPlaylistName) {
+                const playlistSelect = document.getElementById('playlist-select');
+                const existingPlaylists = new Set(Array.from(playlistSelect.options).map(option => option.value));
+
+                if (!existingPlaylists.has(newPlaylistName)) {
+                    const newOption = document.createElement('option');
+                    newOption.value = newPlaylistName;
+                    newOption.textContent = newPlaylistName;
+                    playlistSelect.appendChild(newOption);
+                    playlistSelect.value = newPlaylistName;
+                } else {
+                    alert("Playlist already exists.");
+                }
+            } else {
+                alert("Playlist name cannot be empty.");
+            }
+        });
+
+        document.getElementById('download-btn').addEventListener('click', () => {
+            const playlistSelect = document.getElementById('playlist-select');
+            const playlist = playlistSelect.value;
+            const song = document.getElementById('search-input').value;
+
+            if (playlist && song) {
+                const data = { playlist, song };
+
+                fetch('/queue_add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    alert(result.message);
+                })
+                .catch(error => {
+                    console.error('Error adding song to playlist:', error);
+                });
+            } else {
+                alert("Please provide both a playlist and a song.");
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populatePlaylists();
+        });
+    </script>
+</body>
+</html>

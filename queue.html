@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queue Page</title>
+    <link rel="stylesheet" href="static/styles.css">
+    <script src="static/queue.js"></script>
+</head>
+<body>
+    <header>
+        <a href="/" class="upload-btn">Upload Music</a>
+    </header>
+    <div class="search-container">
+        <div class="button-container">
+            <button id="rewindBtn" class="circle-button-back">&#9668;&#9668; Backward</button>
+            <button id="togglePlayBtn" class="circle-button-toggle">&#9658; Play/Pause</button>
+            <button id="skipBtn" class="circle-button-forward">&#9658;&#9658; Forward</button>
+            <button id="refreshBtn" class="circle-button-refresh">&#8635; Refresh Queue</button>
+        </div>
+        <input type="text" id="search-input" class="search-bar" placeholder="Search..." list="music-suggestions">
+        <datalist id="music-suggestions"></datalist>
+        <button class="queue-btn" id="queue-btn">Queue to Soundbank</button>
+    </div>
+    <div class="music-list-container">
+        <div class="queue-title">Next in queue:</div>
+        <ul id="music-list"></ul>
+    </div>
+</body>
+</html>
